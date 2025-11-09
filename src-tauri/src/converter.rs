@@ -1,9 +1,9 @@
-use image::{DynamicImage, ImageFormat, ImageEncoder};
+use anyhow::{Context, Result};
+use image::{DynamicImage, ImageEncoder, ImageFormat};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
 use std::fs;
-use anyhow::{Result, Context};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ConvertRequest {
@@ -65,15 +65,13 @@ fn convert_single_image(
     quality: u8,
 ) -> Result<()> {
     // Load the image
-    let img = image::open(input_path)
-        .context(format!("Failed to open image: {:?}", input_path))?;
+    let img = image::open(input_path).context(format!("Failed to open image: {:?}", input_path))?;
 
     // Handle transparency for formats that don't support it
     let img = if matches!(output_format, ImageFormat::Jpeg | ImageFormat::Bmp) {
         // Convert RGBA to RGB with white background
         if img.color().has_alpha() {
-            let rgb_img = DynamicImage::ImageRgb8(img.to_rgb8());
-            rgb_img
+            DynamicImage::ImageRgb8(img.to_rgb8())
         } else {
             img
         }
@@ -104,12 +102,7 @@ fn convert_single_image(
                 image::codecs::png::CompressionType::Best,
                 image::codecs::png::FilterType::Adaptive,
             );
-            encoder.write_image(
-                img.as_bytes(),
-                img.width(),
-                img.height(),
-                img.color(),
-            )?;
+            encoder.write_image(img.as_bytes(), img.width(), img.height(), img.color())?;
         }
         _ => {
             img.save_with_format(&output_path, output_format)?;
@@ -185,11 +178,9 @@ pub fn convert_images(request: ConvertRequest) -> ConvertResult {
     let errors: Vec<String> = results
         .iter()
         .filter_map(|r| {
-            if let Some(err) = &r.error {
-                Some(format!("{}: {}", r.file_name, err))
-            } else {
-                None
-            }
+            r.error
+                .as_ref()
+                .map(|err| format!("{}: {}", r.file_name, err))
         })
         .collect();
 
