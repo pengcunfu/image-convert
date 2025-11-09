@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build the app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Image Converter v__VERSION__'
+          releaseBody: |
+            ## 图片格式转换器 v__VERSION__
+            
+            ### 功能特性
+            - 🖼️ 支持多种图片格式转换 (JPG, PNG, GIF, BMP, WebP, TIFF, ICO)
+            - 📦 批量转换支持
+            - 🎨 质量调节功能 (1-100%)
+            - 📁 支持自定义输出目录或使用源文件目录
+            - 💎 基于 Rust + Tauri 构建，性能优异
+            - 🎯 Ant Design UI，界面简洁美观
+            
+            ### 下载说明
+            - **Windows**: 下载 `.msi` 或 `.exe` 文件
+            - **macOS**: 下载 `.dmg` 文件
+            - **Linux**: 下载 `.AppImage` 或 `.deb` 文件
+            
+            ### 更新日志
+            查看完整更新日志请访问 [CHANGELOG.md](https://github.com/pengcunfu/image-convert/blob/main/CHANGELOG.md)
+          releaseDraft: false
+          prerelease: false
