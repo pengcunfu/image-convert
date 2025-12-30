@@ -181,28 +181,3 @@ def convert_images_to_jpg():
     print("="*60)
     
     return failed_files == 0
-
-def main():
-    """主函数"""
-    print("开始图片格式转换...")
-    print("源文件夹：images2")
-    print("目标文件夹：images")
-    print("目标格式：JPG")
-    print("-" * 30)
-    
-    try:
-        success = convert_images_to_jpg()
-        if success:
-            print("\n图片转换任务完成！")
-        else:
-            print("\n图片转换任务失败！")
-            sys.exit(1)
-    except KeyboardInterrupt:
-        print("\n\n用户中断了转换过程。")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\n发生未预期的错误：{str(e)}")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
