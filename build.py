@@ -8,23 +8,24 @@ AUTHOR = "pengcunfu"
 if sys.platform == "win32":
     args = [
         'nuitka',
-        '--standalone',  # Following all imports is the default for standalone mode and need not be specified.
+        '--standalone',
         '--windows-console-mode=disable',
-        '--plugin-enable=pyside6' ,
+        '--plugin-enable=pyside6',
         '--assume-yes-for-downloads',
-        '--msvc=latest',              # Use MSVC
-        # '--mingw64',                    # Use MinGW
-        # '--show-memory' ,
-        # '--show-progress' ,
+        '--msvc=latest',
+        # '--mingw64',
+        # '--show-memory',
+        # '--show-progress',
         '--windows-icon-from-ico=resources/logo.ico',
-        '--company-name=XiaoYouChR',
-        '--product-name="Ghost Downloader"',
+        '--company-name=ImageConverter',
+        '--product-name="图片格式转换工具"',
         f'--file-version={VERSION}',
         f'--product-version={VERSION}',
-        '--file-description="Ghost Downloader"',
+        '--file-description="图片格式转换工具 - 支持多种格式相互转换"',
         f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
         '--output-dir=dist',
-        'Ghost-Downloader-3.py',
+        '--include-data-files=converter.py=converter.py',
+        'main.py',
     ]
 
     if "--onefile" in sys.argv:
@@ -47,7 +48,8 @@ elif sys.platform == "darwin":
         "--macos-app-icon=resources/logo.icns",
         f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
         '--output-dir=dist',
-        'Ghost-Downloader-3.py',
+        '--include-data-files=converter.py=converter.py',
+        'main.py',
     ]
 else:
     args = [
@@ -60,8 +62,9 @@ else:
         # '--show-progress',
         '--linux-icon=resources/logo.png',
         '--output-dir=dist',
-        'Ghost-Downloader-3.py',
+        '--include-data-files=converter.py=converter.py',
+        'main.py',
     ]
 
-print(args)
+print('Executing:', ' '.join(args))
 os.system(' '.join(args))
