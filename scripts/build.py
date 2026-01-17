@@ -1,70 +1,62 @@
-import os
 import sys
+import subprocess
+from pathlib import Path
 
-VERSION = "1.0.0"
-YEAR = "2025"
-AUTHOR = "pengcunfu"
+# Import version information
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from version import VERSION, YEAR, AUTHOR, COMPANY_NAME, PRODUCT_NAME, DESCRIPTION, EXE_NAME
 
 if sys.platform == "win32":
     args = [
-        'nuitka',
+        sys.executable, '-m', 'nuitka',
         '--standalone',
         '--windows-console-mode=disable',
         '--plugin-enable=pyside6',
         '--assume-yes-for-downloads',
         '--msvc=latest',
-        # '--mingw64',
-        # '--show-memory',
-        # '--show-progress',
-        '--windows-icon-from-ico=resources/logo.ico',
-        '--company-name=ImageConverter',
-        '--product-name="图片格式转换工具"',
+        '--windows-icon-from-ico=resources/icon.ico',
+        '--include-data-dir=app=app',
+        f'--company-name={COMPANY_NAME}',
+        f'--product-name={PRODUCT_NAME}',
         f'--file-version={VERSION}',
         f'--product-version={VERSION}',
-        '--file-description="图片格式转换工具 - 支持多种格式相互转换"',
-        f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
+        f'--file-description={DESCRIPTION}',
+        f'--copyright=Copyright(C) {YEAR} {AUTHOR}',
         '--output-dir=dist',
-        '--include-data-files=converter.py=converter.py',
+        f'--output-filename={EXE_NAME}',
         'main.py',
     ]
 
     if "--onefile" in sys.argv:
-        args.pop(args.index("--standalone"))
         args.insert(1, "--onefile")
-        args.insert(1, "--onefile-cache-mode=cached")
+        args.insert(2, "--onefile-cache-mode=cached")
 
 elif sys.platform == "darwin":
     args = [
-        'python3 -m nuitka',
+        'python3', '-m', 'nuitka',
         '--standalone',
         '--plugin-enable=pyside6',
-        # '--show-memory',
-        # '--show-progress',
         '--static-libpython=no',
-        "--macos-create-app-bundle",
-        "--assume-yes-for-download",
-        "--macos-app-mode=gui",
-        f"--macos-app-version={VERSION}",
-        "--macos-app-icon=resources/logo.icns",
-        f'--copyright="Copyright(C) {YEAR} {AUTHOR}"',
+        '--macos-create-app-bundle',
+        '--assume-yes-for-downloads',
+        '--macos-app-mode=gui',
+        f'--macos-app-version={VERSION}',
+        '--macos-app-icon=resources/icon.icns',
+        f'--copyright=Copyright(C) {YEAR} {AUTHOR}',
         '--output-dir=dist',
-        '--include-data-files=converter.py=converter.py',
         'main.py',
     ]
 else:
     args = [
-        'nuitka',
+        sys.executable, '-m', 'nuitka',
         '--standalone',
         '--plugin-enable=pyside6',
         '--include-qt-plugins=platforms',
         '--assume-yes-for-downloads',
-        # '--show-memory',
-        # '--show-progress',
-        '--linux-icon=resources/logo.png',
+        '--linux-icon=resources/icon.png',
         '--output-dir=dist',
-        '--include-data-files=converter.py=converter.py',
         'main.py',
     ]
 
-print('Executing:', ' '.join(args))
-os.system(' '.join(args))
+print('Executing command:', ' '.join(args))
+subprocess.run(args, check=True)
