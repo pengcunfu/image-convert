@@ -30,7 +30,7 @@ TEMPLATE_FILE = SCRIPTS_DIR / "install.template.iss"
 ISS_FILE = SCRIPTS_DIR / "install.iss"
 
 # Application specific configuration (can be modified for other projects)
-APP_GUID = "8F4A2B1C-9A3D-4E5F-6B7C-8D9E0F1A2B3C4D"  # Unique GUID identifier
+APP_GUID = "A7B3C9D2-4E8F-4A5C-8B2D-6F3E9A1C4D7E"  # Unique GUID identifier
 REG_KEY_ID = "IMAGECONVERT"  # Registry key name (short identifier, no braces)
 DIST_SUBDIR = "main.dist"  # Distribution subdirectory containing built files
 SETUP_FILENAME_BASE = "ImageConvert-Setup"  # Setup file base name (without version and .exe)
