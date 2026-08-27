@@ -24,6 +24,8 @@ class OutputFormat(Enum):
     WEBP = "webp"
     BMP = "bmp"
     TIFF = "tiff"
+    GIF = "gif"
+    TGA = "tga"
 
     @classmethod
     def from_string(cls, value):
@@ -36,24 +38,22 @@ class OutputFormat(Enum):
             "webp": cls.WEBP,
             "bmp": cls.BMP,
             "tiff": cls.TIFF,
+            "tif": cls.TIFF,
+            "gif": cls.GIF,
+            "tga": cls.TGA,
         }
         return value_map.get(value.lower(), cls.JPG)
 
     def get_extension(self):
         """获取文件扩展名"""
-        if self == OutputFormat.JPG or self == OutputFormat.JPEG:
-            return ".jpg"
-        elif self == OutputFormat.PNG:
-            return ".png"
-        elif self == OutputFormat.ICO:
-            return ".ico"
-        elif self == OutputFormat.WEBP:
-            return ".webp"
-        elif self == OutputFormat.BMP:
-            return ".bmp"
-        elif self == OutputFormat.TIFF:
-            return ".tiff"
-        return ".jpg"
+        _map = {
+            OutputFormat.JPG: ".jpg", OutputFormat.JPEG: ".jpg",
+            OutputFormat.PNG: ".png", OutputFormat.ICO: ".ico",
+            OutputFormat.WEBP: ".webp", OutputFormat.BMP: ".bmp",
+            OutputFormat.TIFF: ".tiff", OutputFormat.GIF: ".gif",
+            OutputFormat.TGA: ".tga",
+        }
+        return _map.get(self, ".jpg")
 
 
 class ImageConverter:
@@ -96,6 +96,8 @@ class ImageConverter:
             elif ext == ".bmp":
                 cv2.imwrite(str(target_path), img)
             elif ext == ".tiff":
+                cv2.imwrite(str(target_path), img)
+            elif ext in [".gif", ".tga"]:
                 cv2.imwrite(str(target_path), img)
             else:
                 return False
@@ -165,6 +167,10 @@ class ImageConverter:
                 img.save(str(target_path), 'BMP')
             elif ext == ".tiff":
                 img.save(str(target_path), 'TIFF')
+            elif ext == ".gif":
+                img.save(str(target_path), 'GIF')
+            elif ext == ".tga":
+                img.save(str(target_path), 'TGA')
             else:
                 return False
 
